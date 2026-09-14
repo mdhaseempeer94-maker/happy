@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You, My Love</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #fcf6ee;
+      font-family: 'Playfair Display', serif;
+      color: #6b3e3e;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      position: relative;
+      background: #fbf5ec;
+      box-shadow: 0 0 25px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.7s ease;
+      z-index: 1;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    /* Screen 1: Gift Box */
+    .gift-box {
+      width: 160px;
+      cursor: pointer;
+      animation: gentle-bounce 2.2s infinite ease-in-out;
+      transition: transform 0.2s;
+    }
+    .gift-box:active {
+      transform: scale(0.95);
+    }
+    .gift-title {
+      font-size: 26px;
+      font-style: italic;
+      color: #8c2830;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+    .tap-hint {
+      font-size: 14px;
+      color: #b08c84;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    @keyframes gentle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Falling Rose Animation */
+    .petals-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .petal {
+      position: absolute;
+      top: -50px;
+      font-size: 28px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    /* Screen 2: Quote & Lock */
+    .card-banner {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .card-banner h2 {
+      font-size: 32px;
+      color: #8c2830;
+      font-style: italic;
+    }
+    .card-banner p {
+      font-size: 15px;
+      color: #82665e;
+      margin-top: 4px;
+    }
+    .quote-box {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid #ebd9cf;
+      border-radius: 18px;
+      padding: 18px 24px;
+      font-size: 17px;
+      line-height: 1.8;
+      text-align: center;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(184, 137, 137, 0.08);
+    }
+    .hl-green {
+      background-color: #d8ead9;
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+    .hl-pink {
+      background-color: #f7d2d6;
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+    .hl-yellow {
+      background-color: #faebd3;
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+    .lock-trigger {
+      cursor: pointer;
+      text-align: center;
+      animation: pulse 1.8s infinite;
+    }
+    .lock-icon {
+      font-size: 42px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Screen 3: Keypad */
+    .pin-title {
+      font-size: 22px;
+      color: #8c2830;
+      font-style: italic;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    .dots-container {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 35px;
+    }
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #a87979;
+      background: transparent;
+      transition: background-color 0.2s;
+    }
+    .dot.filled {
+      background-color: #4a7753;
+      border-color: #4a7753;
+    }
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 260px;
+    }
+    .num-btn {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid #ead3c6;
+      background: #f7ede3;
+      font-size: 22px;
+      font-family: inherit;
+      color: #473030;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .num-btn:active {
+      background: #ebd4c4;
+      transform: scale(0.92);
+    }
+    .num-btn.clear {
+      font-size: 14px;
+      font-style: italic;
+      color: #8c2830;
+    }
+
+    /* Screen 4: Scrapbook & Letter */
+    #screen-gallery {
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 30px 16px 60px;
+    }
+    .gallery-grid {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .polaroid {
+      background: white;
+      padding: 10px 10px 24px;
+      box-shadow: 0 6px 18px rgba(100, 70, 70, 0.12);
+      border-radius: 3px;
+      width: 86%;
+      max-width: 320px;
+      transition: transform 0.3s ease;
+    }
+    .polaroid:nth-child(odd) {
+      transform: rotate(-2.5deg);
+    }
+    .polaroid:nth-child(even) {
+      transform: rotate(2.5deg);
+    }
+    .polaroid img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+      border-radius: 2px;
+    }
+    .letter-paper {
+      background: #fbf5eb;
+      border: 1px solid #ebd8c8;
+      width: 95%;
+      padding: 30px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #edd9cb 31px,
+        #edd9cb 32px
+      );
+      line-height: 32px;
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+      color: #3f2f2f;
+      margin-bottom: 25px;
+    }
+    .signature-section {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .signature-section h3 {
+      font-size: 28px;
+      color: #8c2830;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .signature-section p {
+      font-style: italic;
+      color: #947169;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="petals-container" id="petals"></div>
+
+  <div class="screen active" id="screen-gift">
+    <svg class="gift-box" viewBox="0 0 100 100" onclick="openGift()">
+      <path d="M50 24 C40 10, 20 12, 30 28 C42 32, 50 30, 50 30 C50 30, 58 32, 70 28 C80 12, 60 10, 50 24 Z" fill="#eb7082"/>
+      <rect x="20" y="32" width="60" height="15" rx="3" fill="#f48293"/>
+      <rect x="25" y="47" width="50" height="40" rx="3" fill="#ea6f81"/>
+      <rect x="44" y="32" width="12" height="55" fill="#f9d342"/>
+    </svg>
+    <div class="gift-title">For you,  Anushka.</div>
+    <div class="tap-hint">(tap to open)</div>
+  </div>
+
+  <div class="screen" id="screen-quote">
+    <div class="card-banner">
+      <h2>From me to you.</h2>
+      
+    </div>
+    <div class="quote-box">
+      In your <span class="hl-pink">smile</span>, I found my <span class="hl-green">peace</span>.<br>
+      In your <span class="hl-yellow">love</span>, I found my <span class="hl-pink">home</span>.
+    </div>
+    <div class="lock-trigger" onclick="goToLock()">
+      <div class="lock-icon">🔒</div>
+      <div class="tap-hint">(tap to open)</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-lock">
+    <div class="lock-icon" style="font-size: 36px;">🔒</div>
+    <div class="pin-title">Enter Passkey</div>
+    <div class="dots-container">
+      <div class="dot" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+    <div class="numpad">
+      <button class="num-btn" onclick="pressKey(1)">1</button>
+      <button class="num-btn" onclick="pressKey(2)">2</button>
+      <button class="num-btn" onclick="pressKey(3)">3</button>
+      <button class="num-btn" onclick="pressKey(4)">4</button>
+      <button class="num-btn" onclick="pressKey(5)">5</button>
+      <button class="num-btn" onclick="pressKey(6)">6</button>
+      <button class="num-btn" onclick="pressKey(7)">7</button>
+      <button class="num-btn" onclick="pressKey(8)">8</button>
+      <button class="num-btn" onclick="pressKey(9)">9</button>
+      <button class="num-btn" style="visibility: hidden;"></button>
+      <button class="num-btn" onclick="pressKey(0)">0</button>
+      <button class="num-btn clear" onclick="clearKey()">Clear</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-gallery">
+    <div class="gallery-grid">
+      
+      .
+      <div class="polaroid"><img src="1234567890.jpeg" alt="Photo 3" /></div>
+      <div class="polaroid"><img src="123456789.jpeg" alt="Photo 4" /></div>
+      <div class="polaroid"><img src="12345.jpeg" alt="Photo 5" /></div>
+    </div>
+
+    <div class="letter-paper">
+      To My Dearest,<br><br>
+     Wishing you a very, very Happy Birthday! 🎂🌸 I hope this year brings you lots of happiness, good health, success, and all the things you wish for. ❤️ Stay the same simple, caring, and crazy person you are. 😄🫶🏻
+
+I don’t know if I’ve ever told you this properly, but there are so many little things about you that I really like. ❤️
+
+I like your simplicity, your nature, your behaviour, the way you talk, your expressions, your eyes, your hair 😂 And honestly, even your dark circles look cute to me. I don’t know how you manage that. 😭😂
+
+And that “aa baba” you say to me… I don’t know why, but it sounds so cute coming from you. 🥹 Every time you say it, I just smile.
+
+You also have this funny habit of saying “no no no” in almost every situation 😂 and somehow, even that looks cute when you do it. 😭
+
+I really like seeing you in traditional clothes. The bindi on your forehead, the way you carry yourself, and the little details of your look… everything just suits you so well. 🌸❤️ And when you leave your hair open, you look even more beautiful. 😌
+
+Even in your college dress, you somehow have your own charm. You don’t even have to try too hard—you just look good being yourself. 🤌🏻✨
+
+And your dancing… honestly, you dance really well. 👀😂 Sometimes I feel like you secretly have a whole dancer personality that you don’t show everyone. 😭
+
+But you know what I like the most?
+
+It’s not only the way you look. It’s the way you care. ❤️
+
+You care about me in your own little ways. Whenever I call you, even if you’re busy, you still talk to me nicely. And even if we don’t talk for many days, when we finally talk again, it feels like nothing has changed. You’re still the same with me. 🫶🏻
+
+You help me whenever I need it, you listen to me, and you’re there not only when everything is good, but even when things are difficult. That means a lot to me. ❤️
+
+I also really like your expressions. Sometimes your face says everything before you even say anything. 😂
+
+And honestly, I like your smile, but I also like the way you are when you’re not smiling—when you’re serious, quiet, tired, or just lost in your own thoughts. You still have something special about you. ❤️
+
+I think that’s why I like you so much. It’s not one particular thing. It’s all these small things that make you you.
+
+Your “aa baba,” your “no no no,” your open hair, your bindi, your eyes, your expressions, your dancing, your simplicity, your nature, and most importantly, the way you care. ❤️
+
+So basically… I like almost everything about you. 😂
+
+But seriously, I really like you just the way you are. ❤️
+
+Once again, Happiest Birthday! 🎂🌷 Stay happy, keep smiling, and keep being the amazing person you are. ✨
+
+And if this message felt a little too much, I’m really sorry. 🥹 I didn’t mean to make things awkward or uncomfortable. I just wanted to share what I genuinely like about you. If I said anything wrong or made you uncomfortable in any way, I’m really sorry. 🤍
+    </div>
+
+    <div class="signature-section">
+      <div style="font-size: 20px; color: #b84e5a; margin-bottom: 6px;">❤</div>
+      
+     
+    </div>
+  </div>
+</div>
+
+<script>
+  const PASSKEY = "2007"; // Set your custom passkey here
+  let enteredPin = "";
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function openGift() {
+    launchPetals();
+    setTimeout(() => {
+      showScreen('screen-quote');
+    }, 1100);
+  }
+
+  function goToLock() {
+    showScreen('screen-lock');
+  }
+
+  function pressKey(num) {
+    if (enteredPin.length < 4) {
+      enteredPin += num;
+      updateDots();
+      if (enteredPin.length === 4) {
+        setTimeout(verifyPin, 250);
+      }
+    }
+  }
+
+  function clearKey() {
+    enteredPin = "";
+    updateDots();
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      if (i < enteredPin.length) {
+        dot.classList.add('filled');
+      } else {
+        dot.classList.remove('filled');
+      }
+    }
+  }
+
+  function verifyPin() {
+    if (enteredPin === PASSKEY) {
+      launchPetals();
+      showScreen('screen-gallery');
+    } else {
+      alert("Incorrect passkey! Try 1234");
+      clearKey();
+    }
+  }
+
+  function launchPetals() {
+    const container = document.getElementById('petals');
+    const flowers = ['🌸', '🌹', '💐', '🌺'];
+    for (let i = 0; i < 24; i++) {
+      const el = document.createElement('div');
+      el.className = 'petal';
+      el.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.animationDuration = (2.2 + Math.random() * 1.5) + 's';
+      el.style.animationDelay = (Math.random() * 0.4) + 's';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+  }
+</script>
+
+</body>
+</html>
